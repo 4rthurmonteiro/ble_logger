@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:ble_logger/history.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
@@ -27,7 +28,7 @@ class _ServiceElementState extends State<ServiceElement> {
   void initState() {
     super.initState();
 
-    historyNotifier = ValueNotifier([]);
+    historyNotifier = ValueNotifier(History.loggerHistory);
     loggerCharacteristic = widget.service.characteristics
         .where((element) => element.uuid.str == _loggerCharacteristicUuid)
         .firstOrNull;
@@ -37,6 +38,7 @@ class _ServiceElementState extends State<ServiceElement> {
           loggerCharacteristic!.lastValueStream.listen((value) {
         final newHistory = List<List<int>>.from(historyNotifier.value);
         newHistory.add(value);
+        History.loggerHistory.add(value);
         historyNotifier.value = newHistory;
         scrollController.jumpTo(scrollController.position.maxScrollExtent + 20);
       });
